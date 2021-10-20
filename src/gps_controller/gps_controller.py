@@ -2,7 +2,7 @@ from abc import ABCMeta,abstractmethod
 class GpsError(Exception):
     pass
 
-class GpsController(metaClass = ABCMeta):
+class GpsController(metaclass = ABCMeta):
     def __init__(self):
         pass
     

@@ -4,7 +4,7 @@ from time import time
 
 @dataclasses.dataclass
 class SenserData(object):
-    time_stamp: datetime
+    time_stamp: datetime = datetime.datetime.now()
     lon: float = 0.0 # 経度
     lat: float = 0.0# 緯度
     altitude: float = 0.0 # 高度（海抜)

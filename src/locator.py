@@ -4,7 +4,7 @@ from . import gps_controller
 from . import acceleration_controller
 from . import geo_helper
 
-INTERBAL_DISTANCE = 5.0
+INTERBAL_DISTANCE = 0.0
 INTERBAL_TIME= 0.1
 
 class NOtLocatorSetupError(Exception):
@@ -24,6 +24,7 @@ class Locator():
 
         if self._gps == None or self._accel == None :
             return False
+
         self._is_setup = True
         return True
 
@@ -40,7 +41,6 @@ class Locator():
         gps_data = self._gps.get_gps_data()
         lastpos = (gps_data[0],gps_data[1])
 
-        
         while True:
             starttime = time.time()
             self.check_vital()
@@ -56,7 +56,6 @@ class Locator():
                 yield data
                 lastpos = (gps_data[0],gps_data[1])
 
-            # TOOD
             # 一定時間が立っていたらスリープ時間を変更するといった工夫が必要
             endtime = time.time()
             if INTERBAL_DISTANCE > endtime - starttime :

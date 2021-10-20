@@ -3,7 +3,7 @@ from abc import ABCMeta,abstractmethod
 class AcceleError(Exception):
     pass
 
-class AcceleController(metaClass = ABCMeta):
+class AcceleController(metaclass = ABCMeta):
     def __init__(self):
         pass
 

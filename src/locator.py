@@ -21,18 +21,22 @@ class Locator():
         self._is_setup = False
         self._gps = gps_controller.create_gps_controller(gps_controller.GPS_TYPE_SERIAL)
         self._accel = acceleration_controller.create_accele_controller(acceleration_controller.ACCELE_TYPE_MPU9250)
-
-        if self._gps == None or self._accel == None :
-            return False
-
         self._is_setup = True
         return True
 
     def check_vital(self):
         if not self._is_setup :
             raise NotLocatorSetupError('')
-        self._gps.check_vaital()
-        self._accel.check_vaital()
+
+        if self._gps is not None:
+            self._gps.check_vaital()
+        else:
+            raise NotLocatorSetupError('')
+        
+        if self._accel is not None:
+            self._accel.check_vaital()
+        else:
+            raise NotLocatorSetupError('')
 
 
     def logging(self):
@@ -61,7 +65,7 @@ class Locator():
                 time.sleep(INTERVAL_TIME - (endtime - starttime))
     
 class Distance_Locator(Locator):
-    
+
     def logging(self):
         self.check_vital()
         gps_data = self._gps.get_gps_data()
@@ -88,17 +92,25 @@ class Distance_Locator(Locator):
                 time.sleep(INTERVAL_TIME - (endtime - starttime))
 
 class Timeinterval_Locator(Locator):
+
+    def check_vital(self):
+        if not self._is_setup :
+            raise NotLocatorSetupError('')
+
     def logging(self):
-        
         while True:
             starttime = time.time()
             self.check_vital()
-            gps_data = self._gps.get_gps_data()
-            accele_data = self._accel.get_accele_data()
-            
             data = senser_data.SenserData()
-            data.set_gps_data(*gps_data)
-            data.set_accele_data(*accele_data)
+
+            if self._gps is not None:
+                gps_data = self._gps.get_gps_data()
+                data.set_gps_data(*gps_data)
+
+            if self._accel is not None:
+                accele_data = self._accel.get_accele_data()
+                data.set_accele_data(*accele_data)
+                
             yield data
 
             # 一定時間が立っていたらスリープ時間を変更するといった工夫が必要

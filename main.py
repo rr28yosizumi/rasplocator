@@ -3,7 +3,7 @@ from src.outputter import csv_outputter
 
 MAXCOUNT = 100
 def main():
-    loc = locator.Locator()
+    loc = locator.Timeinterval_Locator()
     out = csv_outputter.CsvOutputter('./test.csv')
     count = 0
     for data in loc.logging():

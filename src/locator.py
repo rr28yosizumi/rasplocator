@@ -2,6 +2,7 @@ import time
 from . import senser_data
 from . import gps_controller
 from . import acceleration_controller
+from . import co2senser_controller
 from . import geo_helper
 
 INTERVAL_DISTANCE = 0.0
@@ -21,6 +22,7 @@ class Locator():
         self._is_setup = False
         self._gps = gps_controller.create_gps_controller(gps_controller.GPS_TYPE_SERIAL)
         self._accel = acceleration_controller.create_accele_controller(acceleration_controller.ACCELE_TYPE_MPU9250)
+        self._co2 = co2senser_controller.create_co2senser_controller(co2senser_controller.MH_Z19)
         self._is_setup = True
         return True
 
@@ -50,12 +52,15 @@ class Locator():
 
             gps_data = self._gps.get_gps_data()
             accele_data = self._accel.get_accele_data()
+            co2 = self._co2.get_co2_data()
+
             distance = geo_helper.cal_distance(lastpos,(gps_data[0],gps_data[1]))
 
             if distance >= INTERVAL_DISTANCE:
                 data = senser_data.SenserData()
                 data.set_gps_data(*gps_data)
                 data.set_accele_data(*accele_data)
+                data.set_co2_data(*co2)
                 yield data
                 lastpos = (gps_data[0],gps_data[1])
 
@@ -77,12 +82,14 @@ class Distance_Locator(Locator):
 
             gps_data = self._gps.get_gps_data()
             accele_data = self._accel.get_accele_data()
+            co2 = self._co2.get_co2_data()
             distance = geo_helper.cal_distance(lastpos,(gps_data[0],gps_data[1]))
 
             if distance >= INTERVAL_DISTANCE:
                 data = senser_data.SenserData()
                 data.set_gps_data(*gps_data)
                 data.set_accele_data(*accele_data)
+                data.set_co2_data(*co2)
                 yield data
                 lastpos = (gps_data[0],gps_data[1])
 
@@ -110,10 +117,15 @@ class Timeinterval_Locator(Locator):
             if self._accel is not None:
                 accele_data = self._accel.get_accele_data()
                 data.set_accele_data(*accele_data)
+
+            if self._co2 is not None:
+                co2 = self._co2.get_co2_data()
+                data.set_co2_data(**co2)
                 
             yield data
 
             # 一定時間が立っていたらスリープ時間を変更するといった工夫が必要
             endtime = time.time()
-            time.sleep(INTERVAL_TIME - (endtime - starttime))
+            interval_time = INTERVAL_TIME - (endtime - starttime)
+            time.sleep(  0 if interval_time < 0 else interval_time )
             

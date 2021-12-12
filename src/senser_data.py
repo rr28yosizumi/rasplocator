@@ -21,6 +21,9 @@ class SenserData(object):
     accel_y: float = 0.0 # y方向加速度
     accel_z: float = 0.0 # z方向加速度
     
+    co2: float = 0.0 # CO2濃度（ppm)
+    temp:float = 0.0 # 温度
+
     photo_path: str =''
 
     def set_gps_data(self,lat,lon,altitude,gps_count,fix_type,hdop,vdop,pdop,timestamp):
@@ -41,6 +44,10 @@ class SenserData(object):
         self.accel_x = accel_x
         self.accel_y = accle_y
         self.accel_z = accle_z
+
+    def set_co2_data(self,co2,temp):
+        self.co2 =co2
+        self.temp =temp
 
     def get_dict(self):
         data = dataclasses.asdict(self)
